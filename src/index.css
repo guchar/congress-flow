@@ -193,3 +193,18 @@ textarea:focus-visible {
     opacity: 1;
   }
 }
+
+/* REF text glow animation */
+@keyframes ref-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.6), 0 0 16px rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(239, 68, 68, 0.8), 0 0 24px rgba(239, 68, 68, 0.5);
+  }
+}
+
+.ref-text-glow {
+  animation: ref-glow 2s ease-in-out infinite;
+}

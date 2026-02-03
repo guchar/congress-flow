@@ -112,25 +112,21 @@ const SavedDebateItem = ({
   );
 };
 
+interface SavedFlowsSidebarProps {
+  onNewDebate: () => void;
+}
+
 /**
  * SavedFlowsSidebar Component
  *
  * Collapsible sidebar showing all saved debate flows.
  * Click to load, hover to show delete.
  */
-export const SavedFlowsSidebar = () => {
+export const SavedFlowsSidebar = ({ onNewDebate }: SavedFlowsSidebarProps) => {
   const savedDebates = useSavedDebates();
   const currentDebate = useCurrentDebate();
   const isSidebarOpen = useIsSidebarOpen();
-  const { loadDebate, deleteSavedDebate, toggleSidebar, createDebate } =
-    useDebateStore();
-
-  const handleNewDebate = () => {
-    const topic = prompt("Enter debate topic:");
-    if (topic?.trim()) {
-      createDebate(topic.trim());
-    }
-  };
+  const { loadDebate, deleteSavedDebate, toggleSidebar } = useDebateStore();
 
   return (
     <motion.div
@@ -167,7 +163,7 @@ export const SavedFlowsSidebar = () => {
           {/* New Debate Button */}
           <div className="px-4 mb-2">
             <button
-              onClick={handleNewDebate}
+              onClick={onNewDebate}
               className="w-full py-2 px-3 flex items-center justify-center gap-2 text-sm font-medium text-[var(--color-accent)] rounded-xl hover:bg-[var(--color-accent)]/5 transition-colors"
             >
               <Plus className="w-4 h-4" />

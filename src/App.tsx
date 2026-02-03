@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Gavel, ArrowRight, Sparkles, Users, Link2 } from "lucide-react";
 
@@ -9,6 +9,7 @@ import { SummaryPanel } from "./components/Summary";
 import { RefutationLinesWithHighlight } from "./components/RefutationLines";
 import { SavedFlowsSidebar } from "./components/SavedFlowsSidebar";
 import { Button } from "./components/ui/Button";
+import { NewDebateModal } from "./components/NewDebateModal";
 
 // Contexts
 import { RefutationProvider } from "./contexts";
@@ -138,9 +139,11 @@ function App() {
   // References
   const flowTableRef = useRef<HTMLDivElement>(null);
 
+  // Modal state
+  const [isNewDebateModalOpen, setIsNewDebateModalOpen] = useState(false);
+
   // Store
   const currentDebate = useCurrentDebate();
-  const { createDebate } = useDebateStore();
   const hasDebate = !!currentDebate;
 
   // Hooks for refutation visualization
@@ -171,13 +174,10 @@ function App() {
     [setHoveredArgumentId],
   );
 
-  // Handle new debate creation
-  const handleStartDebate = () => {
-    const topic = prompt("Enter debate topic:");
-    if (topic?.trim()) {
-      createDebate(topic.trim());
-    }
-  };
+  // Handle new debate creation - open modal
+  const handleStartDebate = useCallback(() => {
+    setIsNewDebateModalOpen(true);
+  }, []);
 
   // Keyboard shortcuts
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -190,7 +190,7 @@ function App() {
 
     // N - New debate
     if (e.key === "n" || e.key === "N") {
-      handleStartDebate();
+      setIsNewDebateModalOpen(true);
     }
   }, []);
 
@@ -207,7 +207,7 @@ function App() {
       {/* Main 3-column layout */}
       <main className="flex-1 flex overflow-hidden">
         {/* Left: Saved Flows Sidebar */}
-        <SavedFlowsSidebar />
+        <SavedFlowsSidebar onNewDebate={handleStartDebate} />
 
         {/* Center: Flow Table */}
         <div className="flex-1 overflow-auto">
@@ -245,6 +245,12 @@ function App() {
         links={allRelevantLinks}
         hoveredArgumentId={hoveredArgumentId}
         connectedArgumentIds={connectedArgumentIds}
+      />
+
+      {/* New Debate Modal */}
+      <NewDebateModal
+        isOpen={isNewDebateModalOpen}
+        onClose={() => setIsNewDebateModalOpen(false)}
       />
     </div>
   );

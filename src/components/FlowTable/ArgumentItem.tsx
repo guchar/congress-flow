@@ -22,6 +22,32 @@ const parseRefPattern = (content: string): string | null => {
 };
 
 /**
+ * Renders content with REF [Name] highlighted in red with glow
+ */
+const renderHighlightedContent = (content: string): React.ReactNode => {
+  const refRegex = /(REF\s+\w+)/gi;
+  const parts = content.split(refRegex);
+  
+  return parts.map((part, index) => {
+    if (refRegex.test(part)) {
+      // Reset regex lastIndex since we're testing again
+      refRegex.lastIndex = 0;
+      return (
+        <span
+          key={index}
+          className="text-[var(--color-refutation)] font-semibold ref-text-glow"
+        >
+          {part}
+        </span>
+      );
+    }
+    // Reset regex lastIndex
+    refRegex.lastIndex = 0;
+    return <span key={index}>{part}</span>;
+  });
+};
+
+/**
  * ArgumentItem Component
  *
  * Simplified argument entry - just a clean text area.
@@ -29,6 +55,7 @@ const parseRefPattern = (content: string): string | null => {
  */
 const ArgumentItem: React.FC<ArgumentItemProps> = ({ argument, speakerId }) => {
   const [content, setContent] = useState(argument.content);
+  const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { updateArgument, deleteArgument, currentDebate } = useDebateStore();
@@ -60,8 +87,14 @@ const ArgumentItem: React.FC<ArgumentItemProps> = ({ argument, speakerId }) => {
     setContent(e.target.value);
   };
 
+  // Handle focus
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
   // Handle content blur (save)
   const handleContentBlur = () => {
+    setIsFocused(false);
     if (content !== argument.content) {
       // Update content and refutesSpeaker if REF pattern found
       updateArgument(argument.id, {
@@ -76,6 +109,11 @@ const ArgumentItem: React.FC<ArgumentItemProps> = ({ argument, speakerId }) => {
     deleteArgument(argument.id);
   };
 
+  // Handle click on the display overlay to focus the textarea
+  const handleDisplayClick = () => {
+    textareaRef.current?.focus();
+  };
+
   return (
     <motion.div
       layout
@@ -88,7 +126,6 @@ const ArgumentItem: React.FC<ArgumentItemProps> = ({ argument, speakerId }) => {
         rounded-md
         transition-all duration-200
         hover:bg-white/80
-        ${hasRefutation ? "border-l-2 border-l-[var(--color-refutation)]" : "border-l-2 border-l-transparent"}
       `}
       data-argument-id={argument.id}
       data-speaker-id={speakerId}
@@ -107,11 +144,12 @@ const ArgumentItem: React.FC<ArgumentItemProps> = ({ argument, speakerId }) => {
         <Trash2 className="w-3 h-3 text-[var(--color-text-tertiary)]" />
       </button>
 
-      {/* Content area */}
+      {/* Content area - textarea for editing */}
       <textarea
         ref={textareaRef}
         value={content}
         onChange={handleContentChange}
+        onFocus={handleFocus}
         onBlur={handleContentBlur}
         placeholder="Enter argument..."
         className={`
@@ -122,9 +160,20 @@ const ArgumentItem: React.FC<ArgumentItemProps> = ({ argument, speakerId }) => {
           resize-none outline-none border-none
           min-h-[32px] p-2
           focus:outline-none focus:ring-0 focus:border-none
+          ${!isFocused && hasRefutation ? "text-transparent caret-[var(--color-text-primary)]" : ""}
         `}
         rows={1}
       />
+
+      {/* Highlighted display overlay - shown when not focused and has REF */}
+      {!isFocused && hasRefutation && content && (
+        <div
+          onClick={handleDisplayClick}
+          className="absolute inset-0 p-2 text-sm text-[var(--color-text-primary)] pointer-events-auto cursor-text whitespace-pre-wrap break-words"
+        >
+          {renderHighlightedContent(content)}
+        </div>
+      )}
     </motion.div>
   );
 };

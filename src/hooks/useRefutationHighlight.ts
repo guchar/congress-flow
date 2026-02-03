@@ -69,12 +69,26 @@ export function useRefutationHighlight(): RefutationHighlightState {
     );
 
     // Add speaker refutation link if the argument has refutesSpeaker set
-    if (argument.refutesSpeaker) {
-      outgoing.push({
-        sourceArgumentId: hoveredArgumentId,
-        targetArgumentId: `speaker-${argument.refutesSpeaker}`,
-        type: REFUTATION_LINK_TYPES.REFUTES,
-      });
+    // Connect to the first argument of the referenced speaker for a cleaner visual
+    if (argument.refutesSpeaker && currentDebate) {
+      const refutedSpeaker = currentDebate.speakers.find(
+        (s) => s.id === argument.refutesSpeaker,
+      );
+      if (refutedSpeaker && refutedSpeaker.arguments.length > 0) {
+        // Connect to the first argument of the refuted speaker
+        outgoing.push({
+          sourceArgumentId: hoveredArgumentId,
+          targetArgumentId: refutedSpeaker.arguments[0].id,
+          type: REFUTATION_LINK_TYPES.REFUTES,
+        });
+      } else {
+        // Fallback to speaker card if no arguments
+        outgoing.push({
+          sourceArgumentId: hoveredArgumentId,
+          targetArgumentId: `speaker-${argument.refutesSpeaker}`,
+          type: REFUTATION_LINK_TYPES.REFUTES,
+        });
+      }
     }
 
     // Incoming: this argument is refuted by others
