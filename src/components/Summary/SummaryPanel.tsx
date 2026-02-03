@@ -1,0 +1,198 @@
+import { motion } from "framer-motion";
+import { AlertCircle, ChevronRight, Loader2, Sparkles } from "lucide-react";
+import { useDebateSummary } from "../../hooks/useDebateSummary";
+import { useCurrentDebate } from "../../stores/debateStore";
+import { Button } from "../ui/Button";
+import { ClashAreasSection } from "./ClashAreasSection";
+import { MajorArgumentsSection } from "./MajorArgumentsSection";
+import { RecommendationsSection } from "./RecommendationsSection";
+
+interface SummaryPanelProps {
+  onScrollToArgument?: (argumentId: string) => void;
+}
+
+/**
+ * Fixed sidebar panel for displaying AI-generated debate summaries.
+ * Always visible on the right side, auto-generates content.
+ */
+export const SummaryPanel = ({ onScrollToArgument }: SummaryPanelProps) => {
+  const currentDebate = useCurrentDebate();
+  const {
+    summary,
+    isLoading,
+    error,
+    generateSummary,
+    clearSummary,
+    isConfigured,
+  } = useDebateSummary();
+
+  const hasArguments =
+    currentDebate?.speakers.some((s) => s.arguments.length > 0) ?? false;
+
+  return (
+    <motion.aside
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3 }}
+      className="h-full w-full bg-white flex flex-col overflow-hidden"
+    >
+      {/* Header */}
+      <div className="flex items-center gap-3 px-5 py-4">
+        <div className="p-2 rounded-xl bg-[var(--color-accent)]/10">
+          <Sparkles className="w-5 h-5 text-[var(--color-accent)]" />
+        </div>
+        <div>
+          <h2 className="text-base font-semibold text-[var(--color-text-primary)]">
+            AI Summary
+          </h2>
+          <p className="text-xs text-[var(--color-text-tertiary)]">
+            Powered by Gemini
+          </p>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto px-5">
+        {/* API Key Warning */}
+        {!isConfigured && (
+          <div className="mb-4 p-4 rounded-xl bg-amber-50">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-amber-800">
+                  Gemini API Key Required
+                </p>
+                <p className="text-xs text-amber-700 mt-1">
+                  Add your API key to{" "}
+                  <code className="px-1 py-0.5 rounded bg-amber-100 font-mono text-[10px]">
+                    VITE_GEMINI_API_KEY
+                  </code>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* No Debate State */}
+        {!currentDebate && (
+          <div className="flex flex-col items-center justify-center h-48 text-center">
+            <p className="text-sm text-[var(--color-text-tertiary)]">
+              Start a debate to see AI analysis
+            </p>
+          </div>
+        )}
+
+        {/* No Arguments State */}
+        {currentDebate && !hasArguments && (
+          <div className="flex flex-col items-center justify-center h-48 text-center">
+            <p className="text-sm text-[var(--color-text-tertiary)]">
+              Add arguments to generate insights
+            </p>
+          </div>
+        )}
+
+        {/* Generate Button */}
+        {currentDebate && hasArguments && !summary && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="p-3 rounded-full bg-[var(--color-accent)]/10 mb-4">
+              <Sparkles className="w-6 h-6 text-[var(--color-accent)]" />
+            </div>
+            <h3 className="text-sm font-medium text-[var(--color-text-primary)] mb-2">
+              Ready to Analyze
+            </h3>
+            <p className="text-xs text-[var(--color-text-tertiary)] mb-4 max-w-[200px]">
+              Generate AI insights on arguments, clashes, and recommendations
+            </p>
+            <Button
+              onClick={generateSummary}
+              disabled={!isConfigured}
+              size="sm"
+              className="gap-2"
+            >
+              <Sparkles className="w-4 h-4" />
+              Generate
+            </Button>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center h-48 text-center">
+            <Loader2 className="w-6 h-6 text-[var(--color-accent)] animate-spin mb-3" />
+            <p className="text-sm text-[var(--color-text-tertiary)]">
+              Analyzing...
+            </p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !isLoading && (
+          <div className="mb-4 p-4 rounded-xl bg-red-50">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-red-700">
+                  Generation failed
+                </p>
+                <p className="text-xs text-red-600 mt-1">{error.message}</p>
+                <button
+                  onClick={generateSummary}
+                  className="mt-2 text-xs text-[var(--color-accent)] hover:underline"
+                >
+                  Try again
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Summary Content */}
+        {summary && !isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-4 pb-6"
+          >
+            {/* Overall Assessment */}
+            <div className="p-4 rounded-xl bg-[var(--color-bg-tertiary)]">
+              <h3 className="text-xs font-medium text-[var(--color-text-tertiary)] uppercase tracking-wider mb-2">
+                Assessment
+              </h3>
+              <p className="text-sm text-[var(--color-text-primary)] leading-relaxed">
+                {summary.overallAssessment}
+              </p>
+            </div>
+
+            {/* Major Arguments */}
+            <MajorArgumentsSection
+              arguments={summary.majorArguments}
+              onArgumentClick={onScrollToArgument}
+            />
+
+            {/* Areas of Clash */}
+            <ClashAreasSection clashAreas={summary.areasOfClash} />
+
+            {/* Recommendations */}
+            <RecommendationsSection recommendations={summary.recommendations} />
+
+            {/* Regenerate Button */}
+            <div className="flex justify-center pt-4">
+              <button
+                onClick={() => {
+                  clearSummary();
+                  generateSummary();
+                }}
+                className="flex items-center gap-2 text-xs text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Regenerate
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </motion.aside>
+  );
+};

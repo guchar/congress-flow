@@ -1,0 +1,195 @@
+/* Import Google Fonts - must come before other imports */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@import "tailwindcss";
+
+/* Congress Flow - Premium Design System Base Styles */
+
+/* CSS Custom Properties - Apple-inspired Light Theme */
+:root {
+  /* Background colors - Clean whites and soft grays */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+  --color-bg-elevated: #ffffff;
+  --color-bg-hover: #f3f4f6;
+
+  /* Border colors - Subtle, minimal */
+  --color-border-subtle: rgba(0, 0, 0, 0.04);
+  --color-border-default: rgba(0, 0, 0, 0.08);
+  --color-border-strong: rgba(0, 0, 0, 0.12);
+  --color-border-focus: rgba(59, 130, 246, 0.5);
+
+  /* Text colors - High contrast for readability */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #9ca3af;
+  --color-text-disabled: #d1d5db;
+
+  /* Affirmative (Sky Blue) */
+  --color-affirmative: #0ea5e9;
+  --color-affirmative-glow: rgba(14, 165, 233, 0.15);
+  --color-affirmative-subtle: rgba(14, 165, 233, 0.08);
+
+  /* Negative (Rose) */
+  --color-negative: #f43f5e;
+  --color-negative-glow: rgba(244, 63, 94, 0.15);
+  --color-negative-subtle: rgba(244, 63, 94, 0.08);
+
+  /* Accent (Blue - Apple style) */
+  --color-accent: #3b82f6;
+  --color-accent-glow: rgba(59, 130, 246, 0.15);
+
+  /* Refutation (Red) */
+  --color-refutation: #ef4444;
+  --color-refutation-glow: rgba(239, 68, 68, 0.15);
+
+  /* Semantic colors */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  /* Post-it note colors */
+  --color-postit-affirmative: #fef3c7;
+  --color-postit-negative: #dbeafe;
+
+  /* Typography */
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Monaco, Consolas, monospace;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* Shadows - Soft, Apple-style */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover:
+    0 4px 12px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-dropdown:
+    0 4px 16px rgba(0, 0, 0, 0.08), 0 12px 40px rgba(0, 0, 0, 0.06);
+  --shadow-postit:
+    0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  letter-spacing: -0.011em;
+}
+
+::selection {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: var(--color-text-primary);
+}
+
+/* Remove default focus outlines */
+*:focus {
+  outline: none;
+}
+
+/* Subtle focus for interactive elements (buttons, links) */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* No focus outline for text inputs - use subtle background instead */
+input:focus,
+textarea:focus,
+input:focus-visible,
+textarea:focus-visible {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Refutation Line Highlight States */
+[data-argument-id] {
+  transition:
+    opacity var(--transition-normal),
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
+}
+
+/* Hovered argument - slightly elevated */
+[data-argument-id].refutation-hovered {
+  z-index: 10;
+  box-shadow:
+    0 0 0 2px var(--color-refutation),
+    0 4px 16px var(--color-refutation-glow);
+}
+
+/* Connected arguments - highlighted */
+[data-argument-id].refutation-connected {
+  z-index: 5;
+  box-shadow:
+    0 0 0 2px var(--color-refutation),
+    0 2px 8px var(--color-refutation-glow);
+}
+
+/* Non-connected arguments - dimmed */
+[data-argument-id].refutation-dimmed {
+  opacity: 0.4;
+}
+
+/* REF highlight styling */
+.ref-highlight {
+  color: var(--color-refutation);
+  font-weight: 600;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* Post-it note base styles */
+.postit-note {
+  position: relative;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.postit-note:hover {
+  transform: scale(1.01) rotate(0deg);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Refutation line animation keyframes */
+@keyframes refutation-dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes refutation-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
