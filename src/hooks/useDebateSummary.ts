@@ -1,7 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useState, useMemo, useEffect } from "react";
+import { useCallback, useState } from "react";
 import { z } from "zod";
-import { getGeminiModel, isGeminiConfigured } from "../lib/gemini";
+import {
+  getGeminiModel,
+  isGeminiConfigured,
+  generateContentWithRetry,
+} from "../lib/gemini";
 import { DEBATE_SUMMARY_PROMPT, formatDebateForPrompt } from "../lib/prompts";
 import { useDebateStore } from "../stores/debateStore";
 import type { DebateSummary, ClashStatus, Side } from "../types";
@@ -16,7 +20,7 @@ const debateSummarySchema = z.object({
       side: z.enum([SIDES.AFFIRMATIVE, SIDES.NEGATIVE]),
       argument: z.string(),
       strength: z.number().min(0).max(100),
-    }),
+    })
   ),
   areasOfClash: z.array(
     z.object({
@@ -28,7 +32,7 @@ const debateSummarySchema = z.object({
         CLASH_STATUS.CONTESTED,
         CLASH_STATUS.UNADDRESSED,
       ]),
-    }),
+    })
   ),
   recommendations: z.array(z.string()),
   overallAssessment: z.string(),
@@ -78,11 +82,11 @@ const generateSummaryFromAPI = async (
     content: string;
     type: string;
   }>,
-  negativeArguments: Array<{ speaker: string; content: string; type: string }>,
+  negativeArguments: Array<{ speaker: string; content: string; type: string }>
 ): Promise<DebateSummary> => {
   if (!isGeminiConfigured()) {
     throw new Error(
-      "Gemini API key is not configured. Please set VITE_GEMINI_API_KEY.",
+      "Gemini API key is not configured. Please set VITE_GEMINI_API_KEY."
     );
   }
 
@@ -90,7 +94,7 @@ const generateSummaryFromAPI = async (
   const userMessage = formatDebateForPrompt(
     topic,
     affirmativeArguments,
-    negativeArguments,
+    negativeArguments
   );
 
   const prompt = `${DEBATE_SUMMARY_PROMPT}
@@ -105,7 +109,7 @@ IMPORTANT: You MUST respond with ONLY a valid JSON object, no markdown formattin
   "overallAssessment": "string"
 }`;
 
-  const result = await model.generateContent(prompt);
+  const result = await generateContentWithRetry(model, prompt);
   const response = result.response;
   const content = response.text();
 
@@ -134,18 +138,10 @@ export const DEBATE_SUMMARY_QUERY_KEY = ["debateSummary"] as const;
  */
 export const useDebateSummary = () => {
   const [summary, setSummary] = useState<DebateSummary | null>(null);
-  const [lastContentHash, setLastContentHash] = useState<string>("");
+  const [cooldownUntil, setCooldownUntil] = useState<number>(0);
+  const [cooldownMessage, setCooldownMessage] = useState<string>("");
   const currentDebate = useDebateStore((state) => state.currentDebate);
   const queryClient = useQueryClient();
-
-  // Calculate a simple hash of debate content to detect changes
-  const contentHash = useMemo(() => {
-    if (!currentDebate) return "";
-    const content = currentDebate.speakers
-      .flatMap((s) => s.arguments.map((a) => a.content))
-      .join("|");
-    return `${currentDebate.topic}-${content.length}-${currentDebate.speakers.length}`;
-  }, [currentDebate]);
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -189,56 +185,51 @@ export const useDebateSummary = () => {
       return generateSummaryFromAPI(
         currentDebate.topic,
         affirmativeArguments,
-        negativeArguments,
+        negativeArguments
       );
     },
     onSuccess: (data) => {
       setSummary(data);
-      setLastContentHash(contentHash);
+      setCooldownUntil(0);
+      setCooldownMessage("");
       // Invalidate any cached summaries
       queryClient.invalidateQueries({ queryKey: DEBATE_SUMMARY_QUERY_KEY });
+    },
+    onError: (error) => {
+      if (!(error instanceof Error)) return;
+      if (error.name === "RateLimitError") {
+        // 2 minute cooldown on rate limit
+        setCooldownUntil(Date.now() + 120_000);
+        setCooldownMessage(
+          "Rate limited. Please wait 2 minutes before retrying."
+        );
+        return;
+      }
+      if (error.name === "ServiceUnavailableError") {
+        setCooldownUntil(Date.now() + 60_000);
+        setCooldownMessage(
+          "Service is busy. Please wait a minute and try again."
+        );
+      }
     },
   });
 
   const generateSummary = useCallback(() => {
+    if (cooldownUntil > Date.now()) return;
     mutation.mutate();
-  }, [mutation]);
+  }, [mutation, cooldownUntil]);
 
   const clearSummary = useCallback(() => {
     setSummary(null);
     mutation.reset();
   }, [mutation]);
 
-  // Auto-generate summary when content changes significantly
-  // Uses debounce to avoid too many API calls
-  useEffect(() => {
-    if (!isGeminiConfigured()) return;
-    if (!currentDebate) return;
-    if (mutation.isPending) return;
+  // Auto-generation disabled to prevent rate limit issues with Google's free tier.
+  // Users must click the "Generate Summary" button manually.
+  // This ensures we stay well within the 15 requests/minute limit.
 
-    // Check if we have enough content to generate
-    const totalArgs = currentDebate.speakers.reduce(
-      (sum, s) => sum + s.arguments.filter((a) => a.content.trim()).length,
-      0,
-    );
-
-    // Only auto-generate if we have at least 2 arguments and content has changed
-    if (totalArgs < 2) return;
-    if (contentHash === lastContentHash) return;
-
-    // Debounce the auto-generation
-    const timeout = setTimeout(() => {
-      generateSummary();
-    }, 3000); // 3 second debounce
-
-    return () => clearTimeout(timeout);
-  }, [
-    contentHash,
-    lastContentHash,
-    currentDebate,
-    mutation.isPending,
-    generateSummary,
-  ]);
+  // Check if currently on cooldown
+  const isOnCooldown = cooldownUntil > Date.now();
 
   return {
     summary,
@@ -247,5 +238,7 @@ export const useDebateSummary = () => {
     generateSummary,
     clearSummary,
     isConfigured: isGeminiConfigured(),
+    cooldownMessage,
+    isOnCooldown,
   };
 };

@@ -24,6 +24,7 @@ export const SummaryPanel = ({ onScrollToArgument }: SummaryPanelProps) => {
     generateSummary,
     clearSummary,
     isConfigured,
+    cooldownMessage,
   } = useDebateSummary();
 
   const hasArguments =
@@ -126,6 +127,17 @@ export const SummaryPanel = ({ onScrollToArgument }: SummaryPanelProps) => {
         )}
 
         {/* Error State */}
+        {cooldownMessage && !isLoading && (
+          <div className="mb-4 p-4 rounded-xl bg-amber-50">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-amber-800">Please wait</p>
+                <p className="text-xs text-amber-700 mt-1">{cooldownMessage}</p>
+              </div>
+            </div>
+          </div>
+        )}
         {error && !isLoading && (
           <div className="mb-4 p-4 rounded-xl bg-red-50">
             <div className="flex items-start gap-3">
