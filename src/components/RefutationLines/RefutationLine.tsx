@@ -100,7 +100,7 @@ export function RefutationLine({
   sourceRect,
   targetRect,
   type: _type,
-  lineKey,
+  lineKey: _lineKey,
   containerOffset = { x: 0, y: 0 },
 }: RefutationLineProps) {
   const points = useMemo(

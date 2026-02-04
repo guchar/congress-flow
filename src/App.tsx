@@ -22,7 +22,7 @@ import {
 } from "./hooks/useRefutationHighlight";
 
 // Store
-import { useCurrentDebate, useDebateStore } from "./stores/debateStore";
+import { useCurrentDebate } from "./stores/debateStore";
 
 /**
  * Welcome screen shown when no debate is active.
