@@ -159,19 +159,42 @@ function App() {
   const { handleMouseEnter, handleMouseLeave } =
     useArgumentHoverHandlers(setHoveredArgumentId);
 
-  // Scroll to argument handler for summary panel
+  // Scroll to speaker handler for summary panel
   const handleScrollToArgument = useCallback(
-    (argumentId: string) => {
-      const element = document.querySelector(
-        `[data-argument-id="${argumentId}"]`,
-      );
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
-        setHoveredArgumentId(argumentId);
-        setTimeout(() => setHoveredArgumentId(null), 2000);
+    (speakerNames: string[]) => {
+      if (!speakerNames || speakerNames.length === 0) return;
+      
+      // Find all speaker cards with matching names
+      const speakerElements: Element[] = [];
+      speakerNames.forEach((name) => {
+        // Look for speaker cards that contain this name
+        const elements = document.querySelectorAll('[data-speaker-name]');
+        elements.forEach((el) => {
+          const speakerName = el.getAttribute('data-speaker-name');
+          if (speakerName?.toLowerCase() === name.toLowerCase()) {
+            speakerElements.push(el);
+          }
+        });
+      });
+      
+      if (speakerElements.length > 0) {
+        // Scroll to the first matching speaker
+        speakerElements[0].scrollIntoView({ behavior: "smooth", block: "center" });
+        
+        // Add temporary highlight to all matching speakers
+        speakerElements.forEach((el) => {
+          el.classList.add('speaker-highlight');
+        });
+        
+        // Remove highlight after 2 seconds
+        setTimeout(() => {
+          speakerElements.forEach((el) => {
+            el.classList.remove('speaker-highlight');
+          });
+        }, 2000);
       }
     },
-    [setHoveredArgumentId],
+    [],
   );
 
   // Handle new debate creation - open modal
@@ -233,7 +256,7 @@ function App() {
 
         {/* Right: AI Summary Panel (always visible) */}
         {hasDebate && (
-          <div className="w-[320px] border-l border-[var(--color-border-subtle)] flex-shrink-0">
+          <div className="border-l border-[var(--color-border-subtle)] flex-shrink-0">
             <SummaryPanel onScrollToArgument={handleScrollToArgument} />
           </div>
         )}

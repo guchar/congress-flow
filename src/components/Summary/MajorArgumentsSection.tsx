@@ -5,7 +5,7 @@ import { SIDES } from '../../types';
 
 interface MajorArgumentsSectionProps {
   arguments: MajorArgument[];
-  onArgumentClick?: (argumentId: string) => void;
+  onArgumentClick?: (speakerNames: string[]) => void;
 }
 
 interface ArgumentCardProps {
@@ -29,38 +29,39 @@ const ArgumentCard = ({ argument, index, onClick }: ArgumentCardProps) => {
       className={`
         p-3 rounded-lg border border-[var(--color-border-subtle)]
         bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-bg-elevated)]
-        transition-colors cursor-pointer group
+        transition-colors ${onClick ? 'cursor-pointer' : ''} group
       `}
       style={{
         borderLeftWidth: '3px',
         borderLeftColor: sideColor,
       }}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-3 mb-2">
         <p className="text-sm text-[var(--color-text-primary)] leading-relaxed flex-1">
           {argument.argument}
         </p>
-        <ChevronRight className="w-4 h-4 text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5" />
+        {onClick && (
+          <ChevronRight className="w-4 h-4 text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5" />
+        )}
       </div>
-
-      {/* Strength Indicator */}
-      <div className="mt-3 flex items-center gap-2">
-        <div className="flex-1 h-1.5 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${argument.strength}%` }}
-            transition={{ duration: 0.5, delay: index * 0.05 + 0.2 }}
-            className="h-full rounded-full"
-            style={{ backgroundColor: sideColor }}
-          />
+      
+      {/* Speaker names */}
+      {argument.speakerNames && argument.speakerNames.length > 0 && (
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {argument.speakerNames.map((name, i) => (
+            <span
+              key={i}
+              className="text-xs px-2 py-0.5 rounded-full"
+              style={{
+                backgroundColor: `${sideColor}15`,
+                color: sideColor,
+              }}
+            >
+              {name}
+            </span>
+          ))}
         </div>
-        <span
-          className="text-xs font-medium tabular-nums"
-          style={{ color: sideColor }}
-        >
-          {argument.strength}%
-        </span>
-      </div>
+      )}
     </motion.div>
   );
 };
@@ -106,7 +107,7 @@ export const MajorArgumentsSection = ({
                   key={`aff-${i}`}
                   argument={arg}
                   index={i}
-                  onClick={onArgumentClick ? () => onArgumentClick(`aff-${i}`) : undefined}
+                  onClick={onArgumentClick && arg.speakerNames ? () => onArgumentClick(arg.speakerNames) : undefined}
                 />
               ))}
             </div>
@@ -138,7 +139,7 @@ export const MajorArgumentsSection = ({
                   key={`neg-${i}`}
                   argument={arg}
                   index={i + affirmativeArgs.length}
-                  onClick={onArgumentClick ? () => onArgumentClick(`neg-${i}`) : undefined}
+                  onClick={onArgumentClick && arg.speakerNames ? () => onArgumentClick(arg.speakerNames) : undefined}
                 />
               ))}
             </div>

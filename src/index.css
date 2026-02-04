@@ -208,3 +208,20 @@ textarea:focus-visible {
 .ref-text-glow {
   animation: ref-glow 2s ease-in-out infinite;
 }
+
+/* Speaker highlight animation (when clicked from summary) */
+.speaker-highlight {
+  animation: speaker-highlight-pulse 2s ease-in-out;
+  transform: scale(1.02) rotate(0deg) !important;
+  box-shadow: 0 0 0 3px var(--color-accent), 0 8px 24px rgba(59, 130, 246, 0.3) !important;
+  z-index: 50 !important;
+}
+
+@keyframes speaker-highlight-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px var(--color-accent), 0 8px 24px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 5px var(--color-accent), 0 12px 32px rgba(59, 130, 246, 0.5);
+  }
+}

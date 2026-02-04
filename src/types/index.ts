@@ -135,6 +135,8 @@ export interface MajorArgument {
   argument: string;
   /** Strength score (0-100) */
   strength: number;
+  /** Names of speakers who made this argument */
+  speakerNames: string[];
 }
 
 /**

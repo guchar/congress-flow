@@ -20,6 +20,7 @@ const debateSummarySchema = z.object({
       side: z.enum([SIDES.AFFIRMATIVE, SIDES.NEGATIVE]),
       argument: z.string(),
       strength: z.number().min(0).max(100),
+      speakerNames: z.array(z.string()),
     })
   ),
   areasOfClash: z.array(
@@ -60,6 +61,7 @@ const parseAIResponse = (content: string): DebateSummary => {
       side: arg.side as Side,
       argument: arg.argument,
       strength: arg.strength,
+      speakerNames: arg.speakerNames,
     })),
     areasOfClash: validated.areasOfClash.map((clash) => ({
       topic: clash.topic,
@@ -101,9 +103,17 @@ const generateSummaryFromAPI = async (
 
 ${userMessage}
 
+CRITICAL REMINDERS:
+1. ONLY use words, concepts, and arguments that were EXPLICITLY stated above
+2. DO NOT infer, extrapolate, or elaborate beyond what was actually said
+3. If a speaker said "Cuban people are suffering", DO NOT expand this to "human rights abuses and economic stagnation"
+4. Keep your summaries at the SAME level of sophistication as the actual arguments
+5. Strength scores should reflect the actual depth and development of each argument
+6. If the debate is simple with short arguments, your summary should be simple too
+
 IMPORTANT: You MUST respond with ONLY a valid JSON object, no markdown formatting or code blocks. The JSON must match this structure exactly:
 {
-  "majorArguments": [{"side": "affirmative"|"negative", "argument": "string", "strength": 0-100}],
+  "majorArguments": [{"side": "affirmative"|"negative", "argument": "string", "strength": 0-100, "speakerNames": ["Speaker Name"]}],
   "areasOfClash": [{"topic": "string", "affirmativePosition": "string", "negativePosition": "string", "status": "resolved"|"contested"|"unaddressed"}],
   "recommendations": ["string"],
   "overallAssessment": "string"

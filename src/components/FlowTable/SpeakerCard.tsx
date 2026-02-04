@@ -101,8 +101,10 @@ const SpeakerCard: React.FC<SpeakerCardProps> = ({ speaker }) => {
         ${postitStyles} ${rotation}
         rounded-lg p-4
         shadow-[var(--shadow-postit)]
+        transition-all duration-300
       `}
       data-speaker-id={speaker.id}
+      data-speaker-name={speaker.name}
     >
       {/* Header with speaker name */}
       <div className="flex items-center justify-between mb-3">
