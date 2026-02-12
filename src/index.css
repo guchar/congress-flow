@@ -6,53 +6,54 @@
 
 /* Congress Flow - Premium Design System Base Styles */
 
-/* CSS Custom Properties - Apple-inspired Light Theme */
+/* CSS Custom Properties - Sandel Academy Theme (Pastel Red & White) */
 :root {
-  /* Background colors - Clean whites and soft grays */
+  /* Background colors - Clean whites and soft pastels */
   --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f9fafb;
-  --color-bg-tertiary: #f3f4f6;
+  --color-bg-secondary: #fef8f8;
+  --color-bg-tertiary: #fef2f2;
   --color-bg-elevated: #ffffff;
-  --color-bg-hover: #f3f4f6;
+  --color-bg-hover: #fef2f2;
 
   /* Border colors - Subtle, minimal */
-  --color-border-subtle: rgba(0, 0, 0, 0.04);
-  --color-border-default: rgba(0, 0, 0, 0.08);
-  --color-border-strong: rgba(0, 0, 0, 0.12);
-  --color-border-focus: rgba(59, 130, 246, 0.5);
+  --color-border-subtle: rgba(220, 38, 38, 0.06);
+  --color-border-default: rgba(220, 38, 38, 0.12);
+  --color-border-strong: rgba(220, 38, 38, 0.18);
+  --color-border-focus: rgba(248, 113, 113, 0.4);
 
   /* Text colors - High contrast for readability */
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #6b7280;
   --color-text-tertiary: #9ca3af;
   --color-text-disabled: #d1d5db;
 
-  /* Affirmative (Sky Blue) */
-  --color-affirmative: #0ea5e9;
-  --color-affirmative-glow: rgba(14, 165, 233, 0.15);
-  --color-affirmative-subtle: rgba(14, 165, 233, 0.08);
+  /* Primary Brand Color - Pastel Red (Sandel Academy) */
+  --color-accent: #f87171;
+  --color-accent-glow: rgba(248, 113, 113, 0.2);
+  --color-accent-subtle: rgba(248, 113, 113, 0.08);
 
-  /* Negative (Rose) */
-  --color-negative: #f43f5e;
-  --color-negative-glow: rgba(244, 63, 94, 0.15);
-  --color-negative-subtle: rgba(244, 63, 94, 0.08);
+  /* Affirmative (Pastel Red variation - lighter) */
+  --color-affirmative: #fca5a5;
+  --color-affirmative-glow: rgba(252, 165, 165, 0.2);
+  --color-affirmative-subtle: rgba(252, 165, 165, 0.08);
 
-  /* Accent (Blue - Apple style) */
-  --color-accent: #3b82f6;
-  --color-accent-glow: rgba(59, 130, 246, 0.15);
+  /* Negative (Deeper Red) */
+  --color-negative: #dc2626;
+  --color-negative-glow: rgba(220, 38, 38, 0.2);
+  --color-negative-subtle: rgba(220, 38, 38, 0.08);
 
-  /* Refutation (Red) */
+  /* Refutation (Vibrant Red) */
   --color-refutation: #ef4444;
-  --color-refutation-glow: rgba(239, 68, 68, 0.15);
+  --color-refutation-glow: rgba(239, 68, 68, 0.2);
 
   /* Semantic colors */
   --color-success: #10b981;
   --color-warning: #f59e0b;
-  --color-error: #ef4444;
+  --color-error: #dc2626;
 
-  /* Post-it note colors */
-  --color-postit-affirmative: #fef3c7;
-  --color-postit-negative: #dbeafe;
+  /* Post-it note colors - Warm pastels */
+  --color-postit-affirmative: #fee2e2;
+  --color-postit-negative: #fff5f5;
 
   /* Typography */
   --font-sans:
@@ -98,7 +99,7 @@ body {
 }
 
 ::selection {
-  background-color: rgba(59, 130, 246, 0.2);
+  background-color: rgba(248, 113, 113, 0.25);
   color: var(--color-text-primary);
 }
 
@@ -213,15 +214,15 @@ textarea:focus-visible {
 .speaker-highlight {
   animation: speaker-highlight-pulse 2s ease-in-out;
   transform: scale(1.02) rotate(0deg) !important;
-  box-shadow: 0 0 0 3px var(--color-accent), 0 8px 24px rgba(59, 130, 246, 0.3) !important;
+  box-shadow: 0 0 0 3px var(--color-accent), 0 8px 24px rgba(248, 113, 113, 0.3) !important;
   z-index: 50 !important;
 }
 
 @keyframes speaker-highlight-pulse {
   0%, 100% {
-    box-shadow: 0 0 0 3px var(--color-accent), 0 8px 24px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 0 3px var(--color-accent), 0 8px 24px rgba(248, 113, 113, 0.3);
   }
   50% {
-    box-shadow: 0 0 0 5px var(--color-accent), 0 12px 32px rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 5px var(--color-accent), 0 12px 32px rgba(248, 113, 113, 0.5);
   }
 }

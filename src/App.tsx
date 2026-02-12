@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Gavel, ArrowRight, Sparkles, Users, Link2 } from "lucide-react";
+import { ArrowRight, Sparkles, Users, Link2 } from "lucide-react";
 
 // Components
 import { Header } from "./components/Header";
@@ -66,9 +66,13 @@ const WelcomeScreen = ({ onStartDebate }: { onStartDebate: () => void }) => {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="inline-flex p-4 rounded-2xl bg-[var(--color-accent)]/10 mb-6"
+            className="inline-flex p-6 rounded-2xl bg-white shadow-[var(--shadow-card)] mb-6"
           >
-            <Gavel className="w-10 h-10 text-[var(--color-accent)]" />
+            <img 
+              src="/images/sandel-logo.png" 
+              alt="Sandel Academy" 
+              className="h-24 w-auto"
+            />
           </motion.div>
 
           <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-3 tracking-tight">
