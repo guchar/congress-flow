@@ -4,13 +4,14 @@ import { useCurrentDebate } from "../../stores/debateStore";
 
 interface HeaderProps {
   onNewDebate: () => void;
+  onAbout: () => void;
 }
 
 /**
  * Application header with logo and new debate button.
  * Clean, minimal design with Sandel Academy branding.
  */
-export const Header = ({ onNewDebate }: HeaderProps) => {
+export const Header = ({ onNewDebate, onAbout }: HeaderProps) => {
   const currentDebate = useCurrentDebate();
 
   return (
@@ -23,26 +24,36 @@ export const Header = ({ onNewDebate }: HeaderProps) => {
       <div className="px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Title */}
-          <div className="flex items-center gap-3">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex-shrink-0"
-            >
-              <img 
-                src="/images/sandel-logo.png" 
-                alt="Sandel Academy" 
-                className="h-10 w-auto"
-              />
-            </motion.div>
-            <div>
-              <h1 className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight">
-                Congress Flow
-              </h1>
-              <p className="text-xs text-[var(--color-text-tertiary)]">
-                Sandel Academy
-              </p>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex-shrink-0"
+              >
+                <img 
+                  src="/images/sandel-logo.png" 
+                  alt="Sandel Academy" 
+                  className="h-10 w-auto"
+                />
+              </motion.div>
+              <div>
+                <h1 className="text-base font-semibold text-[var(--color-text-primary)] tracking-tight">
+                  Congress Flow
+                </h1>
+                <p className="text-xs text-[var(--color-text-tertiary)]">
+                  Sandel Academy
+                </p>
+              </div>
             </div>
+
+            {/* About Button */}
+            <button
+              onClick={onAbout}
+              className="px-3 py-1.5 text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)] rounded-lg transition-colors"
+            >
+              About
+            </button>
           </div>
 
           {/* Current topic (if any) */}

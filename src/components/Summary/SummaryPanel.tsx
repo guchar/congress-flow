@@ -164,6 +164,13 @@ export const SummaryPanel = ({ onScrollToArgument }: SummaryPanelProps) => {
                   <Sparkles className="w-4 h-4" />
                   Generate
                 </Button>
+                
+                {/* AI Disclaimer */}
+                <div className="mt-4 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
+                  <p className="text-xs text-amber-800 leading-relaxed">
+                    This is a new tool. It will not work perfectly, errors may arise.
+                  </p>
+                </div>
               </div>
             )}
 
@@ -252,6 +259,13 @@ export const SummaryPanel = ({ onScrollToArgument }: SummaryPanelProps) => {
                     Regenerate
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
+                </div>
+
+                {/* AI Disclaimer at Bottom */}
+                <div className="mt-4 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
+                  <p className="text-xs text-amber-800 leading-relaxed text-center">
+                    This is a new tool. It will not work perfectly, errors may arise.
+                  </p>
                 </div>
               </motion.div>
             )}

@@ -10,6 +10,7 @@ import { RefutationLinesWithHighlight } from "./components/RefutationLines";
 import { SavedFlowsSidebar } from "./components/SavedFlowsSidebar";
 import { Button } from "./components/ui/Button";
 import { NewDebateModal } from "./components/NewDebateModal";
+import { AboutModal } from "./components/AboutModal";
 
 // Contexts
 import { RefutationProvider } from "./contexts";
@@ -145,6 +146,7 @@ function App() {
 
   // Modal state
   const [isNewDebateModalOpen, setIsNewDebateModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 
   // Store
   const currentDebate = useCurrentDebate();
@@ -206,6 +208,11 @@ function App() {
     setIsNewDebateModalOpen(true);
   }, []);
 
+  // Handle about modal
+  const handleAbout = useCallback(() => {
+    setIsAboutModalOpen(true);
+  }, []);
+
   // Keyboard shortcuts
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (
@@ -229,7 +236,7 @@ function App() {
   return (
     <div className="h-screen flex flex-col bg-[var(--color-bg-secondary)]">
       {/* Header */}
-      <Header onNewDebate={handleStartDebate} />
+      <Header onNewDebate={handleStartDebate} onAbout={handleAbout} />
 
       {/* Main 3-column layout */}
       <main className="flex-1 flex overflow-hidden">
@@ -278,6 +285,12 @@ function App() {
       <NewDebateModal
         isOpen={isNewDebateModalOpen}
         onClose={() => setIsNewDebateModalOpen(false)}
+      />
+
+      {/* About Modal */}
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
       />
     </div>
   );
